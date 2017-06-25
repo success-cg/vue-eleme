@@ -24,16 +24,30 @@
 
 <script>
 import header from 'components/header/header.vue'
+const ERR_OK = 0
 
 export default {
+  data() {
+    return {
+      seller: {}
+    }
+  },
+  created() {
+    this.$http.get('/api/seller').then((res) => {
+      // console.log(res)
+      if (res.data.errno === ERR_OK) {
+        console.log(res)
+        this.seller = Object.assign({}, this.seller, res.data)
+      }
+    })
+  },
   components: {
     'v-header': header
   }
 }
 </script>
 
-<style lang="scss">
-@import "common/sass/mixin.scss";
+<style lang="scss">@import "common/sass/mixin.scss";
 
 .tab {
     display: flex;
@@ -46,12 +60,12 @@ export default {
         flex-grow: 1;
         text-align: center;
         & > .item {
-          display: block;
-          font-size: 14px;
-          color: rgb(77,85,93);
-          &.active {
-            color: rgb(240,20,20);
-          }
+            display: block;
+            font-size: 14px;
+            color: rgb(77,85,93);
+            &.active {
+                color: rgb(240,20,20);
+            }
         }
     }
 }
