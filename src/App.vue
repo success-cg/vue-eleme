@@ -1,6 +1,6 @@
 <template>
 <div>
-  <v-header></v-header>
+  <v-header :seller="seller"></v-header>
   <div class="tab border-1px">
     <div class="tab-item">
       <!-- <div>商品</div> -->
@@ -34,10 +34,10 @@ export default {
   },
   created() {
     this.$http.get('/api/seller').then((res) => {
-      // console.log(res)
       if (res.data.errno === ERR_OK) {
-        console.log(res)
-        this.seller = Object.assign({}, this.seller, res.data)
+        this.seller = res.data.data
+        console.log(this.seller)
+        // this.seller = Object.assign({}, this.seller, res.data)
       }
     })
   },
