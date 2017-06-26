@@ -29,20 +29,38 @@
     <div class="background">
       <img :src="seller.avatar" alt="" width="100%" height="100%">
     </div>
-    <div class="detail" v-show="detailShow">
-      <div class="detail-wrapper clearfix">
-        <div class="detail-main">
-          <h1 class="name">{{seller.name}}</h1>
+    <transition name="fade">
+      <div class="detail" v-show="detailShow">
+        <div class="detail-wrapper clearfix">
+          <div class="detail-main">
+            <h1 class="name">{{seller.name}}</h1>
+            <div class="star-wrapper">
+              <star :size="48" :score="seller.score"></star>
+            </div>
+            <div class="title">优惠信息</div>
+            <ul class="supports" v-if="seller.supports">
+              <li class="support-item" v-for="(item,index) in seller.supports">
+                <span class="icon" :class="classMap[seller.supports[index].type]"></span>
+                <span class="text">{{seller.supports[index].description}}</span>
+              </li>
+            </ul>
+            <div class="title">商家公告</div>
+            <div class="bulletin">
+              <p class="content">{{seller.bulletin}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="detail-close" @click="closeDetail">
+          <i class="icon-close"></i>
         </div>
       </div>
-      <div class="detail-close">
-        <i class="icon-close"></i>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import star from 'components/star/star.vue'
+
 export default {
   props: {
     seller: {
@@ -57,15 +75,27 @@ export default {
   methods: {
     showDetail() {
       this.detailShow = true
+    },
+    closeDetail() {
+      this.detailShow = false
     }
   },
   created() {
-    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee']
-  }
+    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'] // 通过seller.supports[index].type映射对应的className
+  },
+  components: {star}
 }
 </script>
 
-<style lang="scss">@import '../../common/sass/mixin.scss';
+<style lang="scss">
+@import '../../common/sass/mixin.scss';
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
 
 .header {
     position: relative;
@@ -208,11 +238,10 @@ export default {
       height: 100%;
       overflow: auto;
       background: rgba(7,17,27,0.8);
+      backdrop-filter: blur(10px);  //背景模糊，只在ios下生效
       .detail-wrapper {
-        // background: blue;
         min-height: 100%;
         .detail-main {
-          // background: red;
           padding-top: 64px;
           padding-bottom: 64px;
           .name {
@@ -221,6 +250,85 @@ export default {
             font-weight: 700;
             width: 100%;
             text-align: center;
+          }
+          .star-wrapper {
+            margin-top: 18px;
+            padding: 2px 0;
+            text-align: center;
+          }
+          .title {
+            display: flex;
+            width: 80%;
+            margin: 28px auto 24px auto;
+            // line-height: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            &::before,
+            &::after {
+              position: relative;
+              top: -6px;
+              display: block;
+              flex-grow: 1;
+              content: '';
+              border-bottom: 1px solid rgba(255,255,255,0.2)
+            }
+            &::before {
+              margin-right: 12px;
+            }
+            &::after {
+              margin-left: 12px;
+            }
+          }
+          .supports {
+            width: 80%;
+            margin: 0 auto;
+            .support-item {
+              padding: 0 12px;
+              margin-bottom: 12px;
+              font-size: 0;
+              &:last-child {
+                margin-bottom: 0;
+              }
+              .icon {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                vertical-align: top;
+                margin-right: 6px;
+                background-size: 16px 16px;
+                background-repeat: no-repeat;
+                &.decrease {
+                    @include bg-image("decrease_2");
+                }
+                &.discount {
+                    @include bg-image("discount_2");
+                }
+                &.guarantee {
+                    @include bg-image("guarantee_2");
+                }
+                &.invoice {
+                    @include bg-image("invoice_2");
+                }
+                &.special {
+                    @include bg-image("special_2");
+                }
+              }
+              .text {
+                line-height: 16px;
+                font-size: 12px;
+              }
+            }
+          }
+          .bulletin {
+            width: 80%;
+            margin: 0 auto;
+            .content {
+              padding: 0 12px;
+              line-height: 24px;
+              font-size: 12px;
+              font-weight: 200;
+              text-align: justify;
+            }
           }
         }
       }

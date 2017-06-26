@@ -35,9 +35,9 @@ export default {
   created() {
     this.$http.get('/api/seller').then((res) => {
       if (res.data.errno === ERR_OK) {
-        this.seller = res.data.data
+        // this.seller = res.data.data
+        this.seller = Object.assign({}, this.seller, res.data.data) // Object.assign 是es6语法
         console.log(this.seller)
-        // this.seller = Object.assign({}, this.seller, res.data)
       }
     })
   },
