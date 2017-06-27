@@ -35,11 +35,14 @@
         </li>
       </ul>
     </div>
+    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
+import shopcart from 'components/shopcart/shopcart.vue'
+
 const ERROR_OK = 0
 
 export default {
@@ -51,21 +54,21 @@ export default {
   data() {
     return {
       goods: [],
-      listHeight: [],   // 每一个不同title商品之间的高度
-      scrollY: 0        // food-warpper已经滚动的高度，通过Better-scroll的scroll事件计算得出
+      listHeight: [], // 每一个不同title商品之间的高度
+      scrollY: 0 // food-warpper已经滚动的高度，通过Better-scroll的scroll事件计算得出
     }
   },
   computed: {
-    currentIndex() {
+    currentIndex() {  // 计算出要高亮的index，即是要高亮的meun-warpper的index,也就是在那个高度区间
       for (let i = 0; i < this.listHeight.length; i++) {
         let height1 = this.listHeight[i]
         let height2 = this.listHeight[i + 1]
-        if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {  // 因为最后一个i+1不存在，因此需要加上!height2进行判定
+        if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) { // 因为最后一个i+1不存在，因此需要加上!height2进行判定
           return i
         }
       }
       return 0
-    }  // 计算出要高亮的index，即是要高亮的meun-warpper的index,也就是在那个高度区间
+    }
   },
   created() {
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'] // 通过seller.supports[index].type映射对应的className
@@ -74,7 +77,7 @@ export default {
         // this.goods = res.data.data
         this.goods = Object.assign({}, this.goods, res.data.data)
         console.log(this.goods)
-        this.$nextTick(() => {  // DOM渲染是异步的，操作DOM要在$nextTick的回调里，此时DOM已经渲染完毕
+        this.$nextTick(() => { // DOM渲染是异步的，操作DOM要在$nextTick的回调里，此时DOM已经渲染完毕
           this._initScroll()
           this._calculateHeight()
         })
@@ -82,14 +85,14 @@ export default {
     })
   },
   methods: {
-    selectMenu(index, event) {  // 移动端better-scroll会阻止默认事件，所以需要在初始化的时候设置click=true
+    selectMenu(index, event) { // 移动端better-scroll会阻止默认事件，所以需要在初始化的时候设置click=true
       if (!event._constructed) { // event._constructed是Better-Scroll派发才会携带
-        return  // 因为better-scroll在PC端不阻止默认事件，所以需要过滤
+        return // 因为better-scroll在PC端不阻止默认事件，所以需要过滤
       }
       let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
       let el = foodList[index]
-      this.foodScore.scrollToElement(el, 300)  // better-scroll的一个API，接受2个参数，第一个为滚动到达的元素，第二个为滚动时间
-      console.log(typeof index)
+      this.foodScore.scrollToElement(el, 300) // better-scroll的一个API，接受2个参数，第一个为滚动到达的元素，第二个为滚动时间
+      // console.log(typeof index) // index类型为string
     },
     _initScroll() { // 初始化better-scroll
       this.menuScroll = new BScroll(this.$refs.menuWrapper, {
@@ -102,7 +105,7 @@ export default {
 
       this.foodScore.on('scroll', (pos) => {
         this.scrollY = Math.abs(Math.round(pos.y))
-        console.log(this.currentIndex)
+        // console.log(this.currentIndex)
       }) // Better-Sroll所携带事件，pos是Better-Scroll封装的对象
     },
     _calculateHeight() {
@@ -111,11 +114,12 @@ export default {
       this.listHeight.push(height)
       for (let i = 0; i < foodList.length; i++) {
         let item = foodList[i]
-        height += item.clientHeight  // 原生JS获取DOM元素的高度
+        height += item.clientHeight // 原生JS获取DOM元素的高度
         this.listHeight.push(height)
       }
     } // 计算每个不同产品类型的高度，并且存进listHeight用来做映射
-  }
+  },
+  components: {shopcart}
 }
 </script>
 
@@ -140,14 +144,14 @@ export default {
             padding: 0 12px;
             line-height: 14px;
             &.current {
-              position: relative;
-              z-index: 10;
-              margin-top: -1px;
-              background: #fff;
-              .text {
-                @include border-none();
-                font-weight: 700;
-              }
+                position: relative;
+                z-index: 10;
+                margin-top: -1px;
+                background: #fff;
+                .text {
+                    @include border-none();
+                    font-weight: 700;
+                }
             }
             .icon {
                 display: inline-block;
