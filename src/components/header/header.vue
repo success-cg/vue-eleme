@@ -90,10 +90,10 @@ export default {
 <style lang="scss">
 @import '../../common/sass/mixin.scss';
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active, .fade-leave-active { // 进入、离开的过程
   transition: opacity .5s;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter, .fade-leave-to { // 进入的初始，离开的最终态
   opacity: 0;
 }
 
@@ -238,7 +238,7 @@ export default {
       height: 100%;
       overflow: auto;
       background: rgba(7,17,27,0.8);
-      backdrop-filter: blur(10px);  //背景模糊，只在ios下生效
+      // backdrop-filter: blur(10px);  //背景模糊，只在ios下生效
       .detail-wrapper {
         min-height: 100%;
         .detail-main {

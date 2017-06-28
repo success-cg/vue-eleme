@@ -23,11 +23,14 @@
                 <h2 class="name">{{food.name}}</h2>
                 <p class="desc">{{food.description}}</p>
                 <div class="extra">
-                  <span class="count">月售{{food.sellCount}}份</span><span>好评率{{food.rating}}%</span>
+                  <span class="count">月售{{food.sellCount}}份</span><span v-show="food.rating">好评率{{food.rating}}%</span>
                 </div>
                 <div class="price">
                   <span class="now">￥{{food.price}}</span>
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
                 </div>
               </div>
             </li>
@@ -35,13 +38,14 @@
         </li>
       </ul>
     </div>
-    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script>
-import BScroll from 'better-scroll'
+import BScroll from 'better-scroll' // better-scroll模块，用于页面滚动，npm安装得到
 import shopcart from 'components/shopcart/shopcart.vue'
+import cartcontrol from 'components/cartcontrol/cartcontrol.vue'
 
 const ERROR_OK = 0
 
@@ -53,13 +57,13 @@ export default {
   },
   data() {
     return {
-      goods: [],
+      goods: [], // 后端获取的数据存在goods数组中
       listHeight: [], // 每一个不同title商品之间的高度
       scrollY: 0 // food-warpper已经滚动的高度，通过Better-scroll的scroll事件计算得出
     }
   },
   computed: {
-    currentIndex() {  // 计算出要高亮的index，即是要高亮的meun-warpper的index,也就是在那个高度区间
+    currentIndex() { // 计算出要高亮的index，即是要高亮的meun-warpper的index,也就是在那个高度区间
       for (let i = 0; i < this.listHeight.length; i++) {
         let height1 = this.listHeight[i]
         let height2 = this.listHeight[i + 1]
@@ -68,15 +72,25 @@ export default {
         }
       }
       return 0
+    },
+    selectFoods() {
+      let foods = []
+      this.goods.forEach((good) => {
+        good.foods.forEach((food) => {
+          if (food.count) {
+            foods.push(food)
+          }
+        })
+      })
+      return foods
     }
   },
   created() {
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'] // 通过seller.supports[index].type映射对应的className
     this.$http.get('/api/goods').then((res) => {
       if (res.data.errno === ERROR_OK) {
-        // this.goods = res.data.data
-        this.goods = Object.assign({}, this.goods, res.data.data)
-        console.log(this.goods)
+        this.goods = res.data.data
+        console.log(`goods`, this.goods)
         this.$nextTick(() => { // DOM渲染是异步的，操作DOM要在$nextTick的回调里，此时DOM已经渲染完毕
           this._initScroll()
           this._calculateHeight()
@@ -100,7 +114,8 @@ export default {
       })
 
       this.foodScore = new BScroll(this.$refs.foodsWrapper, {
-        probeType: 3
+        click: true, // better-scroll会派发一个click事件
+        probeType: 3 // 该参数看文档 https://github.com/ustbhuangyi/better-scroll
       })
 
       this.foodScore.on('scroll', (pos) => {
@@ -119,7 +134,10 @@ export default {
       }
     } // 计算每个不同产品类型的高度，并且存进listHeight用来做映射
   },
-  components: {shopcart}
+  components: {
+    shopcart,
+    cartcontrol
+  }
 }
 </script>
 
@@ -211,6 +229,7 @@ export default {
                 margin-right: 10px;
             }
             .content {
+                position: relative;
                 flex: 1;
                 .name {
                     margin: 2px 0 8px;
@@ -248,6 +267,11 @@ export default {
                         color: rgb(147,153,159);
                         text-decoration: line-through;
                     }
+                }
+                .cartcontrol-wrapper {
+                  position: absolute;
+                  bottom: 0;
+                  right: 0;
                 }
             }
         }
