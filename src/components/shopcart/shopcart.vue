@@ -24,18 +24,24 @@
       </div>
     </div>
     <div class="ball-container">
-      <transition-group name="drop">
-        <div class="ball" v-for="ball in balls" v-show="ball.show" :key="ball">
-          <div class="inner">
-
+      <div v-for="ball in balls">
+        <transition name="drop" @before-enter="beforeDrop" @enter="dropping" @after-enter="afterDrop">
+          <div class="ball" v-show="ball.show">
+            <div class="inner inner-hook"></div>
           </div>
+        </transition>
+      </div>
+      <!-- <transition-group name="drop" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
+        <div class="ball" v-for="ball in balls" v-show="ball.show" :key="ball">
+          <div class="inner inner-hook"></div>
         </div>
-      </transition-group>
+      </transition-group> -->
     </div>
   </div>
 </template>
 
 <script>
+// import Vue from 'vue'
 export default {
   data() {
     return {
@@ -49,7 +55,8 @@ export default {
         show: false
       }, {
         show: false
-      }]
+      }],
+      dropBalls: [] // 存储已经进入运动的小球，待小球运动完，将其style.display设置为none
     }
   },
   props: {
@@ -105,8 +112,52 @@ export default {
     }
   },
   methods: {
-    drop(el) {
-      console.log(el)
+    drop(el) { // el为父组件传进来的，按钮的element
+      this.balls.forEach((ball) => {
+        if (!ball.show) {
+          ball.show = true // 当show设为true的时候，动画就开始了，步骤beforeDrop ==> dropping ==> afterDrop(通过JS动画钩子)
+          ball.el = el // 将按钮的element添加到ball的属性中保存起来
+          this.dropBalls.push(ball)
+        }
+      })
+    },
+    beforeDrop(el) {
+      let count = this.balls.length
+      while (count--) {
+        let ball = this.balls[count]
+        if (ball.show) {
+          let rect = ball.el.getBoundingClientRect() // 获取相对于视口的位置
+          let x = rect.left - 32 // 计算小球发出点和落点的x轴长度
+          let y = -(window.innerHeight - rect.top - 22) // 计算小球发出点和落点的y轴高度
+          console.log(x, y)
+          el.style.display = '' // 原来的小球display为none,现在设置成空,让其可见
+          el.style.webkitTransform = `translate3d(0,${y}px,0)` // 兼容webkit渲染引擎，因为直接写transfrom，webkit引擎没有出现效果
+          el.style.transform = `translate3d(0,${y}px,0)`
+          let inner = el.getElementsByClassName('inner-hook')[0]
+          inner.style.webkitTransform = `translate3d(${x}px,0,0)` // 兼容webkit渲染引擎
+          inner.style.transform = `translate3d(${x}px,0,0)`
+        }
+      }
+    },
+    dropping(el, done) { // 回调函数done看文档"https://cn.vuejs.org/v2/guide/transitions.html#JavaScript-钩子"
+      /* eslint-disable no-unused-vars */
+      let rf = el.offestHeight // 触发浏览器重绘，由于rf变量声明但未使用，添加上面那行注释
+      this.$nextTick(() => {
+        el.style.webkitTransform = `translate3d(0,0,0)` // 兼容webkit渲染引擎，因为直接写transfrom，webkit引擎没有出现效果
+        el.style.transform = `translate3d(0,0,0)`
+        let inner = el.getElementsByClassName('inner-hook')[0]
+        inner.style.webkitTransform = `translate3d(0,0,0)` // 兼容webkit渲染引擎
+        inner.style.transform = `translate3d(0,0,0)`
+        el.addEventListener('transitionend', done)
+        // transitionend事件表示transition变化完成了，回调函数done告诉Vue动画结束
+      })
+    },
+    afterDrop(el) {
+      let ball = this.dropBalls.pop()
+      if (ball) {
+        ball.show = false
+        el.style.display = 'none'
+      }
     }
   }
 }
@@ -222,6 +273,7 @@ export default {
             left: 32px;
             bottom: 22px;
             z-index: 200;
+            transition: all 0.4s linear;
             .inner {
                 width: 16px;
                 height: 16px;

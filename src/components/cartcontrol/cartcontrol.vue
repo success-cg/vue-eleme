@@ -9,6 +9,7 @@
       {{food.count}}
     </div>
     <div class="cart-add icon-add_circle" @click="addCart($event)">
+
     </div>
   </div>
 </template>
@@ -35,7 +36,7 @@ export default {
       } else {
         this.food.count++
       }
-      this.$emit('cartAdd', event.target)  // 做小球动画,$emit自定义事件，将事件和DOM传入
+      this.$emit('cartAdd', event.target) // $emit派发的事件只能在当前组件监听,父组件不能监听到到
     },
     decreaseCart(event) {
       if (!event._constructed) {
