@@ -103,6 +103,11 @@ export default {
         return `去结算`
       }
     }
+  },
+  methods: {
+    drop(el) {
+      console.log(el)
+    }
   }
 }
 </script>

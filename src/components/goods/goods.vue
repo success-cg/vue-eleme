@@ -30,7 +30,7 @@
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
                 <div class="cartcontrol-wrapper">
-                  <cartcontrol :food="food"></cartcontrol>
+                  <cartcontrol :food="food" @cartAdd="addFood"></cartcontrol>
                 </div>
               </div>
             </li>
@@ -38,7 +38,7 @@
         </li>
       </ul>
     </div>
-    <shopcart :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart ref="shopcart" :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
@@ -123,7 +123,7 @@ export default {
         // console.log(this.currentIndex)
       }) // Better-Sroll所携带事件，pos是Better-Scroll封装的对象
     },
-    _calculateHeight() {
+    _calculateHeight() { // 计算每个不同产品类型的高度，并且存进listHeight用来做映射
       let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
       let height = 0
       this.listHeight.push(height)
@@ -132,7 +132,13 @@ export default {
         height += item.clientHeight // 原生JS获取DOM元素的高度
         this.listHeight.push(height)
       }
-    } // 计算每个不同产品类型的高度，并且存进listHeight用来做映射
+    },
+    addFood(target) { // 自定义事件，接收的参数由cartcontrol子组件传来
+      this._drop(target) // 小球动画,传递element
+    },
+    _drop(target) {
+      this.$refs.shopcart.drop(target)  // 小球动画,传递element作为参数传给shopcart组件的drop方法
+    }
   },
   components: {
     shopcart,

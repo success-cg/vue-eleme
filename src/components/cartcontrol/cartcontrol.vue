@@ -8,8 +8,7 @@
     <div class="cart-count" v-show="food.count>0">
       {{food.count}}
     </div>
-    <div class="cart-add" @click="addCart($event)">
-      <i class="icon-add_circle"></i>
+    <div class="cart-add icon-add_circle" @click="addCart($event)">
     </div>
   </div>
 </template>
@@ -36,6 +35,7 @@ export default {
       } else {
         this.food.count++
       }
+      this.$emit('cartAdd', event.target)  // 做小球动画,$emit自定义事件，将事件和DOM传入
     },
     decreaseCart(event) {
       if (!event._constructed) {
