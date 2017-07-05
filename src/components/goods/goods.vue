@@ -16,7 +16,7 @@
           <h1 class="title">{{item.name}}</h1>
           <ul>
             <li v-for="food in item.foods" class="food-item border-1px">
-              <div class="icon">
+              <div class="icon" @click="selectFood(food, $event)">
                 <img :src="food.icon" alt="" width="57" height="57">
               </div>
               <div class="content">
@@ -39,6 +39,7 @@
       </ul>
     </div>
     <shopcart ref="shopcart" :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <food :food="selectedFood" ref="food" @cartAdd="addFood"></food>
   </div>
 </template>
 
@@ -46,6 +47,7 @@
 import BScroll from 'better-scroll' // better-scroll模块，用于页面滚动，npm安装得到
 import shopcart from 'components/shopcart/shopcart.vue'
 import cartcontrol from 'components/cartcontrol/cartcontrol.vue'
+import food from 'components/food/food.vue'
 
 const ERROR_OK = 0
 
@@ -59,7 +61,8 @@ export default {
     return {
       goods: [], // 后端获取的数据存在goods数组中
       listHeight: [], // 每一个不同title商品之间的高度
-      scrollY: 0 // food-warpper已经滚动的高度，通过Better-scroll的scroll事件计算得出
+      scrollY: 0, // food-warpper已经滚动的高度，通过Better-scroll的scroll事件计算得出
+      selectedFood: {}
     }
   },
   computed: {
@@ -82,6 +85,7 @@ export default {
           }
         })
       })
+      // console.log('selectFoods', foods)
       return foods
     }
   },
@@ -99,6 +103,13 @@ export default {
     })
   },
   methods: {
+    selectFood(food, event) {
+      if (!event._constructed) { // event._constructed是Better-Scroll派发才会携带
+        return // 因为better-scroll在PC端不阻止默认事件，所以需要过滤
+      }
+      this.selectedFood = food
+      this.$refs.food.show()  // 选中food子组件，调用子组件里的show方法
+    },
     selectMenu(index, event) { // 移动端better-scroll会阻止默认事件，所以需要在初始化的时候设置click=true
       if (!event._constructed) { // event._constructed是Better-Scroll派发才会携带
         return // 因为better-scroll在PC端不阻止默认事件，所以需要过滤
@@ -136,13 +147,17 @@ export default {
     addFood(target) { // 自定义事件，接收的参数由cartcontrol子组件传来
       this._drop(target) // 小球动画,传递element
     },
-    _drop(target) {
-      this.$refs.shopcart.drop(target)  // 小球动画,传递element作为参数传给shopcart组件的drop方法
+    _drop(target) {  // 命名习惯，私有方法前面加下划线
+        // 性能优化，小球动画异步执行，否则同步的话，第一次执行的时候还有减号的动画，会卡顿
+      this.$nextTick(() => {
+        this.$refs.shopcart.drop(target)  // 小球动画,传递element作为参数传给shopcart组件的drop方法
+      })
     }
   },
   components: {
     shopcart,
-    cartcontrol
+    cartcontrol,
+    food
   }
 }
 </script>

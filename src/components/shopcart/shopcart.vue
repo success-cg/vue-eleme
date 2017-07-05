@@ -2,7 +2,7 @@
   <div class="shopcart">
     <div class="content">
       <div class="content-left">
-        <div class="logo-wrapper">
+        <div class="logo-wrapper" @click.stop.prevent="toggleList">
           <div class="logo" :class="{'highlight': totalCount > 0}">
             <i class="icon-shopping_cart"></i>
           </div>
@@ -17,7 +17,7 @@
           另需配送费￥{{deliveryPrice}}元
         </div>
       </div>
-      <div class="content-right">
+      <div class="content-right" @click="pay">
         <div class="pay" :class="payClass">
           {{payDesc}}
         </div>
@@ -37,11 +37,37 @@
         </div>
       </transition-group> -->
     </div>
+    <transition name="fold">
+      <div class="shopcart-list" v-show="listShow">
+        <div class="list-header clearfix">
+          <h1 class="title">购物车</h1>
+          <span class="empty" @click="empty">清空</span>
+        </div>
+        <div class="list-content" ref="listContent">
+          <ul>
+            <li class="food border-1px" v-for="food in selectFoods">
+              <span class="name">{{food.name}}</span>
+              <div class="price">
+                <span>￥{{food.price * food.count}}</span>
+              </div>
+              <div class="cartcontrol-wrapper">
+                <cartcontrol :food="food"  @cartAdd="drop"></cartcontrol>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </transition>
+    <transition name="fade">
+      <div class="list-mask" v-show="listShow" @click="toggleList"></div>
+    </transition>
   </div>
 </template>
 
 <script>
-// import Vue from 'vue'
+import cartcontrol from 'components/cartcontrol/cartcontrol.vue'
+import BScroll from 'better-scroll'
+
 export default {
   data() {
     return {
@@ -56,7 +82,9 @@ export default {
       }, {
         show: false
       }],
-      dropBalls: [] // 存储已经进入运动的小球，待小球运动完，将其style.display设置为none
+      dropBalls: [],
+        // 存储已经进入运动的小球，待小球运动完，将其style.display设置为none
+      fold: true // 该变量表示shopcart-list是否折叠
     }
   },
   props: {
@@ -109,13 +137,38 @@ export default {
       } else if (this.totalPrice >= this.minPrice) {
         return `去结算`
       }
+    },
+    listShow() {
+      if (!this.totalCount) {
+        this.fold = true  // 如果总数量为0，折叠fold设为true
+        return false      // 如果总数量为0，listShow设为false
+      }
+      let show = !this.fold
+      if (show) {
+          /* better-scroll是根据DOM处理逻辑的，要在$nextTick的回调
+          中执行，因为DOM渲染是异步的 */
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this.scroll = new BScroll(this.$refs.listContent, {
+              click: true
+            })
+          } else {
+            this.scroll.refresh()
+              /* refresh() 强制 scroll 重新计算，当 better-scroll 中的元素
+              发生变化的时候调用此方法，这样就不需要重新new一个新的better-scroll了
+              文档查看"https://github.com/ustbhuangyi/better-scroll" */
+          }
+        })
+      }
+      return show // 如果总数量大于0，listShow设为true
     }
   },
   methods: {
     drop(el) { // el为父组件传进来的，按钮的element
       this.balls.forEach((ball) => {
         if (!ball.show) {
-          ball.show = true // 当show设为true的时候，动画就开始了，步骤beforeDrop ==> dropping ==> afterDrop(通过JS动画钩子)
+          ball.show = true
+              // 当show设为true的时候，动画就开始了，步骤beforeDrop ==> dropping ==> afterDrop(通过JS动画钩子)
           ball.el = el // 将按钮的element添加到ball的属性中保存起来
           this.dropBalls.push(ball)
         }
@@ -123,7 +176,7 @@ export default {
     },
     beforeDrop(el) {
       let count = this.balls.length
-      while (count--) {
+      while (count--) { // pop配合while，把balls做成队列的形式，要从后往前取小球
         let ball = this.balls[count]
         if (ball.show) {
           let rect = ball.el.getBoundingClientRect() // 获取相对于视口的位置
@@ -131,10 +184,11 @@ export default {
           let y = -(window.innerHeight - rect.top - 22) // 计算小球发出点和落点的y轴高度
           console.log(x, y)
           el.style.display = '' // 原来的小球display为none,现在设置成空,让其可见
-          el.style.webkitTransform = `translate3d(0,${y}px,0)` // 兼容webkit渲染引擎，因为直接写transfrom，webkit引擎没有出现效果
+          // el.style.webkitTransform = `translate3d(0,${y}px,0)`
+              // 兼容webkit渲染引擎，因为直接写transfrom，webkit引擎没有出现效果
           el.style.transform = `translate3d(0,${y}px,0)`
           let inner = el.getElementsByClassName('inner-hook')[0]
-          inner.style.webkitTransform = `translate3d(${x}px,0,0)` // 兼容webkit渲染引擎
+          // inner.style.webkitTransform = `translate3d(${x}px,0,0)` // 兼容webkit渲染引擎
           inner.style.transform = `translate3d(${x}px,0,0)`
         }
       }
@@ -149,21 +203,44 @@ export default {
         inner.style.webkitTransform = `translate3d(0,0,0)` // 兼容webkit渲染引擎
         inner.style.transform = `translate3d(0,0,0)`
         el.addEventListener('transitionend', done)
-        // transitionend事件表示transition变化完成了，回调函数done告诉Vue动画结束
+            // transitionend事件表示transition变化完成了，回调函数done告诉Vue动画结束
       })
     },
     afterDrop(el) {
-      let ball = this.dropBalls.pop()
+      let ball = this.dropBalls.pop() // pop配合while，把balls做成队列的形式，要从后往前取小球
       if (ball) {
         ball.show = false
         el.style.display = 'none'
       }
+    },
+    toggleList() {
+      if (!this.totalCount) {
+        return   // 如果没有选择商品，则点击无效
+      }
+      this.fold = !this.fold
+    },
+    empty() {
+      this.selectFoods.forEach((food) => {
+        food.count = 0
+      })
+    },
+    pay() {
+      if (this.totalPrice < this.minPrice) {
+        return
+      }
+      alert(`支付${this.totalPrice}元`)
     }
+  },
+  components: {cartcontrol},
+  updated() {
+    console.log('selectFoods----------', this.selectFoods)
   }
 }
 </script>
 
 <style lang="scss">
+@import '../../common/sass/mixin.scss';
+
 .shopcart {
     position: fixed;
     z-index: 50;
@@ -273,7 +350,7 @@ export default {
             left: 32px;
             bottom: 22px;
             z-index: 200;
-            transition: all 0.4s linear;
+            transition: all 0.4s cubic-bezier(0.49,-0.29,0.75,0.41); /* bezier曲线，详情看"http://cubic-bezier.com/#.49,-0.29,.75,.41" */
             .inner {
                 width: 16px;
                 height: 16px;
@@ -282,6 +359,87 @@ export default {
                 transition: all 0.4s linear;
             }
         }
+    }
+    .shopcart-list {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: -1;
+      width: 100%;
+      transform: translate3d(0,-100%,0);
+      &.fold-enter-active, &.fold-leave-active {
+        transition: all .5s
+      }
+      &.fold-enter, &.fold-leave-to {
+        transform: translate3d(0,0,0);
+      }
+      .list-header {
+        height: 40px;
+        line-height: 40px;
+        padding: 0 18px;
+        background: #f3f5f7;
+        border-bottom: 1px solid rgba(7,17,27,0.1);
+        .title {
+          float: left;
+          font-size: 14px;
+          font-weight: 400;
+          color: rgb(7,17,27);
+        }
+        .empty {
+          float: right;
+          font-size: 12px;
+          color: rgb(0,160,220);
+        }
+      }
+      .list-content {
+        max-height: 220px;
+        overflow: hidden;
+        background: #fff;
+        padding: 0 18px;
+        .food {
+          position: relative;
+          padding: 12px 0;
+          box-sizing: border-box;
+          @include border-1px(rgba(7,17,27,0.1));
+          height: 48px;
+          .name {
+            line-height: 24px;
+            font-size: 14px;
+            color: rgb(7,17,27);
+          }
+          .price {
+            position: absolute;
+            right: 90px;
+            bottom: 12px;
+            line-height: 24px;
+            font-weight: 14px;
+            font-weight: 700;
+            color: rgb(240,20,20)
+          }
+          .cartcontrol-wrapper {
+            position: absolute;
+            right: 0;
+            bottom: 6px;
+          }
+        }
+      }
+    }
+    .list-mask {
+      position: fixed;
+      z-index: -10;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: all .5s;
+      background: rgba(7,17,27,0.6);
+      filter: blur(10px);
+      &.fade-enter-active, &.fade-leave-active {
+        transition: all .5s;
+      }
+      &.fade-enter, &.fade-leave-to {
+        opacity: 0;
+      }
     }
 }
 </style>
