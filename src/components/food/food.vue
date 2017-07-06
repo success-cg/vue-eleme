@@ -44,7 +44,7 @@
                   <img class="avatar" :src="rating.avatar" alt="" width="12" height="12">
                 </div>
                 <div class="time">
-                  {{rating.rateTime | formateDate}}
+                  {{rating.rateTime | changeDate}}
                 </div>
                 <p class="text">
                   <span class="icon" :class="{'icon-thumb_up': rating.rateType === 0, 'icon-thumb_down': rating.rateType === 1}"></span>{{rating.text}}
@@ -66,7 +66,7 @@ import BScroll from 'better-scroll'
 import cartcontrol from 'components/cartcontrol/cartcontrol.vue'
 import split from 'components/split/split.vue'
 import ratingselect from 'components/ratingselect/ratingselect.vue'
-import {formateDate} from 'common/js/date.js'
+import {formateDate} from '../../common/js/date.js'
   /* 带{}，解构赋值，一般是 export 的模块
   不带{}，一般是 export default 的模块 */
 
@@ -132,7 +132,7 @@ export default {
     addFood() {
       this.$emit('cartAdd', event.target)
     },
-    selectRating(type) {
+    selectRating(type) { // type参数由ratingselect组件内传来
       this.selectType = type
       this.$nextTick(() => {
         this.scroll.refresh()
@@ -160,8 +160,8 @@ export default {
     split,
     ratingselect
   },
-  filter: {
-    formateDate(time) {
+  filters: {
+    changeDate(time) {
       let date = new Date(time)
       return formateDate(date, 'yyyy-MM-dd hh:mm') // 引入common模块的JS方法
     }

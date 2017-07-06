@@ -79,9 +79,9 @@ export default {
     }
   },
   updated() {
-    console.log('ratings', this.ratings)
-    console.log('positives', this.positives)
-    console.log('negatives', this.negatives)
+    // console.log('ratings', this.ratings)
+    // console.log('positives', this.positives)
+    // console.log('negatives', this.negatives)
   }
 }
 </script>
