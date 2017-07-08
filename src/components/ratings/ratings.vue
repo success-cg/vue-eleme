@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="ratings" ref="xxx">
+  <div class="ratings" ref="ratings">
     <div class="ratings-content">
       <div class="overview">
         <div class="overview-left">
@@ -113,7 +113,7 @@ export default {
       if (res.data.errno === ERR_OK) {
         this.ratings = res.data.data
         this.$nextTick(() => {
-          this.scroll = new BScroll(this.$refs.xxx, {
+          this.scroll = new BScroll(this.$refs.ratings, {
             click: true
           })
         })

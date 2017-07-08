@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="shopcart">
     <div class="content">
-      <div class="content-left">
-        <div class="logo-wrapper" @click.stop.prevent="toggleList">
+      <div class="content-left" @click.stop.prevent="toggleList">
+        <div class="logo-wrapper">
           <div class="logo" :class="{'highlight': totalCount > 0}">
             <i class="icon-shopping_cart"></i>
           </div>
