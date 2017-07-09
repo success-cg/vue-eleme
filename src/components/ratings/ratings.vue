@@ -118,7 +118,7 @@ export default {
           })
         })
       }
-      console.log('ratings', this.ratings)
+      // console.log('ratings', this.ratings)
     })
   },
   components: {

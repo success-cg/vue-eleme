@@ -51,8 +51,8 @@ export default {
         this.seller = Object.assign({}, this.seller, res.data.data)
           /* Object.assign 是es6语法，类似jQuery的$extend方法，详见MDN文档
           https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/assign */
-        console.log('seller', this.seller)
-        console.log('seller.id', this.seller.id)
+        // console.log('seller', this.seller)
+        // console.log('seller.id', this.seller.id)
       }
     })
   },

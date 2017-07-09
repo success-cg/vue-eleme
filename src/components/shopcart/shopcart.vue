@@ -182,7 +182,7 @@ export default {
           let rect = ball.el.getBoundingClientRect() // 获取相对于视口的位置
           let x = rect.left - 32 // 计算小球发出点和落点的x轴长度
           let y = -(window.innerHeight - rect.top - 22) // 计算小球发出点和落点的y轴高度
-          console.log(x, y)
+          // console.log(x, y)
           el.style.display = '' // 原来的小球display为none,现在设置成空,让其可见
           // el.style.webkitTransform = `translate3d(0,${y}px,0)`
               // 兼容webkit渲染引擎，因为直接写transfrom，webkit引擎没有出现效果
@@ -233,7 +233,7 @@ export default {
   },
   components: {cartcontrol},
   updated() {
-    console.log('selectFoods----------', this.selectFoods)
+    // console.log('selectFoods----------', this.selectFoods)
   }
 }
 </script>

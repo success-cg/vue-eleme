@@ -85,7 +85,6 @@ export default {
           }
         })
       })
-      // console.log('selectFoods', foods)
       return foods
     }
   },
@@ -94,7 +93,7 @@ export default {
     this.$http.get('/api/goods').then((res) => {
       if (res.data.errno === ERROR_OK) {
         this.goods = res.data.data
-        console.log(`goods`, this.goods)
+        // console.log(`goods`, this.goods)
         this.$nextTick(() => { // DOM渲染是异步的，操作DOM要在$nextTick的回调里，此时DOM已经渲染完毕
           this._initScroll()
           this._calculateHeight()
