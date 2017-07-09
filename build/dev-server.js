@@ -50,7 +50,7 @@ apiRoutes.get('/ratings', function(req, res){
   })
 })
 
-app.use('./api', apiRoutes)
+app.use('/api', apiRoutes)
 
 var compiler = webpack(webpackConfig)
 
