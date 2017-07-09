@@ -28,6 +28,10 @@
             </div>
           </li>
         </ul>
+        <div class="favorite">
+          <i class="icon icon-favorite" :class="{'active': favorite}" @click="toggleFavorite"></i>
+          <p class="text">{{favoriteText}}</p>
+        </div>
       </div>
       <split></split>
       <div class="bulletin">
@@ -68,6 +72,7 @@
 import star from 'components/star/star.vue'
 import split from 'components/split/split.vue'
 import BScroll from 'better-scroll'
+import {saveToLocal, loadFromLocal} from 'common/js/store.js'
 
 export default {
   props: {
@@ -77,7 +82,20 @@ export default {
   },
   data() {
     return {
-      classMap: []
+      favorite: (() => {
+        return loadFromLocal(this.seller.id, 'favorite', false)
+      })() // 立即执行函数，从localStorage获取favorite的值
+    }
+  },
+  computed: {
+      /* favoriteText是根据favorite的
+      值而变化的，所以在计算属性中 */
+    favoriteText() {
+      if (this.favorite === false) {
+        return '收藏'
+      } else {
+        return '已收藏'
+      }
     }
   },
   created() {
@@ -128,6 +146,13 @@ export default {
           }
         })
       }
+    },
+    toggleFavorite(event) {
+      if (!event._constructed) {
+        return
+      }
+      this.favorite = !this.favorite
+      saveToLocal(this.seller.id, 'favorite', this.favorite)
     }
   },
   components: {
@@ -148,6 +173,7 @@ export default {
   width: 100%;
   overflow: hidden;
   .overview {
+    position: relative;
     padding: 18px;
     .title {
       margin-bottom: 8px;
@@ -197,6 +223,28 @@ export default {
             font-size: 24px;
           }
         }
+      }
+    }
+    .favorite {
+      position: absolute;
+      right: 11px;
+      top: 18px;
+      width: 50px;
+      text-align: center;
+      .icon {
+        display: block;
+        margin-bottom: 4px;
+        line-height: 24px;
+        font-size: 24px;
+        color: #d4d6d9;
+        &.active {
+          color: rgb(240,20,20);
+        }
+      }
+      .text {
+        line-height: 10px;
+        font-size: 10px;
+        color: rgb(77,85,93);
       }
     }
   }
@@ -289,10 +337,10 @@ export default {
   }
   .info {
     padding: 18px 18px 0 18px;
+    color: rgb(7,17,27);
     .title {
       padding-bottom: 12px;
       line-height: 14px;
-      color: rgb(7,17,27);
       font-size: 14px;
       @include border-1px(rgba(7,17,27,0.1));
     }
@@ -300,7 +348,6 @@ export default {
       padding: 16px 12px;
       line-height: 16px;
       font-size: 12px;
-      color: rgb(7,17,27);
       @include border-1px(rgba(7,17,27,0.1));
       &:last-child {
         @include border-none();
