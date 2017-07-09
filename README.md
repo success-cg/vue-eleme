@@ -4,9 +4,12 @@ step1:
 git clone git@github.com:18810666595/vue-eleme.git
 
 step2:
-npm install
+cd vue-eleme
 
 step3:
+npm install
+
+step4:
 npm run dev
 ```
 
