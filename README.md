@@ -1,6 +1,3 @@
-﻿# vue-eleme
-vue 实战，饿了么手机外卖页面
-
 # 项目启动
 ```
 step1:
@@ -13,22 +10,19 @@ step3:
 npm run dev
 ```
 
-> sell app
+# 效果图
+![vue-eleme.gif](https://ooo.0o0.ooo/2017/07/09/5961a0e413dcc.gif)
 
-## Build Setup
+# 技术栈
+- vue-cli：Vue的官方脚手架工具
+- Axios: 异步获取数据，尤大推荐axios比vue-resource好
+- vue-router: Vue的路由管理插件
+- ES6语法：更加简洁高效
+- scss: 用编程的风格去写css,更加方便有逻辑
+- flex布局：移动端使用flex布局轻松自适应
+- webpack: 当下流行的模块加载和打包器
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+# 总结
+1. 熟悉了vue开发单页应用的流程，使用vue-cli脚手架的经验
+2. 使用了模块化组件的开发模式，便于项目的管理维护
+3. 加深了移动端的开发认识，例如 1像素边框、设备像素比、媒体查询
