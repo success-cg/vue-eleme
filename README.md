@@ -1,8 +1,17 @@
 ﻿# vue-eleme
 vue 实战，饿了么手机外卖页面
 
+# 项目启动
+```
+step1:
+git clone git@github.com:18810666595/vue-eleme.git
 
-# sell
+step2:
+npm install
+
+step3:
+npm run dev
+```
 
 > sell app
 
