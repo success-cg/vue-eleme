@@ -5,17 +5,17 @@
     <div class="tab-item">
       <!-- <div>商品</div> -->
       <!-- <a v-link="{path: '/goods'}">商品</a> -->
-      <router-link to="/goods" class="item">商品</router-link>
+      <router-link to="goods" class="item">商品</router-link>
     </div>
     <div class="tab-item">
       <!-- <div>商品</div> -->
       <!-- <a v-link="{path: '/ratings'}">评论</a> -->
-      <router-link to="/ratings" class="item">评论</router-link>
+      <router-link to="ratings" class="item">评论</router-link>
     </div>
     <div class="tab-item">
       <!-- <div>商品</div> -->
       <!-- <a v-link="{path: '/seller'}">商家</a> -->
-      <router-link to="/seller" class="item">商家</router-link>
+      <router-link to="seller" class="item">商家</router-link>
     </div>
   </div>
   <keep-alive>

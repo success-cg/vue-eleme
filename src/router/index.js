@@ -8,13 +8,14 @@ import seller from 'components/seller/seller.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  {path: '/', component: goods},
+  {path: '/', redirect: '/goods'}, // 路由重定向
   {path: '/goods', component: goods},
   {path: '/ratings', component: ratings},
   {path: '/seller', component: seller}
 ]
 
 const router = new VueRouter({
+  mode: 'history', // 去掉首页的#哈希
   linkActiveClass: 'active',
   routes
 })
