@@ -15,7 +15,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history', // 去掉首页的#哈希
+  // mode: 'history', // 去掉首页的#哈希
   linkActiveClass: 'active',
   routes
 })
