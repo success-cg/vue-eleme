@@ -7,11 +7,7 @@ module.exports = {
     index: path.resolve(__dirname, '../dist/index.html'),
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-<<<<<<< HEAD
     assetsPublicPath: '/',
-=======
-    assetsPublicPath: './',
->>>>>>> 5007c20ffc54629a7c363068e7712b4d40053e67
     productionSourceMap: true,
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
@@ -24,15 +20,11 @@ module.exports = {
     // `npm run build --report`
     // Set to `true` or `false` to always turn it on or off
     bundleAnalyzerReport: process.env.npm_config_report,
-    port: 6545
+    port: 4002
   },
   dev: {
     env: require('./dev.env'),
-<<<<<<< HEAD
-    port: 6544,
-=======
     port: 9000,
->>>>>>> 5007c20ffc54629a7c363068e7712b4d40053e67
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
